@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Dictionary - Поиск терминов</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: rgb(43, 35, 35, 0,10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+            
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            margin-top: 15px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .search-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 20px 25px;
+            font-size: 1.2rem;
+            border: 3px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.2);
+        }
+
+        .search-hint {
+            margin-top: 15px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .search-hint span {
+            background: #e0e7ff;
+            color: var(--primary-color);
+            padding: 3px 10px;
+            border-radius: 6px;
+            margin: 0 5px;
+            font-weight: 600;
+        }
+
+        /* Скрытый по умолчанию список */
+        #dictionaryList {
+            display: none;
+        }
+
+        #dictionaryList.visible {
+            display: block;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .word-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary-color);
+            transition: all 0.3s;
+        }
+
+        .word-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .word-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .english-word {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .russian-translation {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            background: #f1f5f9;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .word-definition {
+            font-size: 1.05rem;
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .results-count {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            display: none;
+        }
+
+        .results-count.visible {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .word-header { flex-direction: column; align-items: flex-start; }
+            .search-box { padding: 15px 20px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1> IT Dictionary</h1>
+        <p class="subtitle">Поиск компьютерных терминов</p>
+    </header>
+
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="Введите термин для поиска...">
+                            
+      
+            </p>
+        </div>
+
+        <div id="resultsCount" class="results-count">
+            Найдено: <strong id="countNumber">0</strong> терминов
+        </div>
+
+        <div id="dictionaryList"></div>
+        <div id="noResults" class="no-results">
+            Термин не найден. Попробуйте другой запрос.
+        </div>
+    </div>
+
+
+    <script>
+        const dictionaryData = [
+            { word: "Algorithm", translation: "Алгоритм", meaning: "Четкая последовательность шагов или инструкций для решения конкретной задачи или проблемы.", category: "programming" },
+            { word: "API", translation: "Интерфейс программирования", meaning: "Набор правил и протоколов, позволяющий разным программам взаимодействовать друг с другом.", category: "programming" },
+            { word: "Array", translation: "Массив", meaning: "Структура данных, хранящая коллекцию элементов одного типа в последовательных ячейках памяти.", category: "programming" },
+            { word: "Authentication", translation: "Аутентификация", meaning: "Процесс проверки подлинности пользователя (например, ввод логина и пароля).", category: "security" },
+            { word: "Authorization", translation: "Авторизация", meaning: "Процесс проверки прав доступа пользователя к определенным ресурсам или действиям.", category: "security" },
+            { word: "Avatar", translation: "Аватар", meaning: "Графическое изображение пользователя в интернете, на форумах, в играх или социальных сетях.", category: "general" },
+            { word: "Async", translation: "Асинхронный", meaning: "Выполнение операций без блокировки основного потока, позволяющее программе продолжать работу.", category: "programming" },
+            { word: "Bandwidth", translation: "Пропускная способность", meaning: "Максимальное количество данных, которое может быть передано через соединение за единицу времени.", category: "network" },
+            { word: "Backend", translation: "Серверная часть", meaning: "Часть приложения, которая работает на сервере и не видна пользователю (базы данных, логика).", category: "programming" },
+            { word: "Beta", translation: "Бета-версия", meaning: "Тестовая версия программы, которая еще не готова к финальному релизу, но уже функциональна.", category: "general" },
+            { word: "Binary", translation: "Двоичный код", meaning: "Система счисления с основанием 2, использующая только цифры 0 и 1, основа компьютерной логики.", category: "general" },
+            { word: "Bit", translation: "Бит", meaning: "Минимальная единица информации в компьютере, может принимать значение 0 или 1.", category: "hardware" },
+            { word: "Boot", translation: "Загрузка", meaning: "Процесс запуска компьютера и загрузки операционной системы в память.", category: "hardware" },
+            { word: "Bootstrap", translation: "Фреймворк", meaning: "Популярная библиотека CSS для создания адаптивных веб-интерфейсов.", category: "programming" },
+            { word: "Browser", translation: "Браузер", meaning: "Программа для просмотра веб-страниц (Chrome, Firefox, Safari, Edge).", category: "general" },
+            { word: "Bug", translation: "Ошибка", meaning: "Дефект в коде программы, вызывающий неправильную работу или сбой.", category: "programming" },
+            { word: "Byte", translation: "Байт", meaning: "Единица измерения информации, состоящая из 8 бит. Основной размер данных в компьютерах.", category: "hardware" },
+            { word: "Cache", translation: "Кэш", meaning: "Временное хранилище данных для ускорения доступа к часто используемой информации.", category: "hardware" },
+            { word: "Cloud", translation: "Облако", meaning: "Серверы в интернете, которые хранят данные и запускают программы вместо локального компьютера.", category: "network" },
+            { word: "Code", translation: "Код", meaning: "Набор инструкций, написанных на языке программирования, которые выполняет компьютер.", category: "programming" },
+            { word: "Compiler", translation: "Компилятор", meaning: "Программа, которая переводит исходный код в машинный код, понятный компьютеру.", category: "programming" },
+            { word: "Cookie", translation: "Куки", meaning: "Небольшой текстовый файл, который веб-сайт сохраняет на компьютере для запоминания информации о пользователе.", category: "network" },
+            { word: "CPU", translation: "Процессор", meaning: "Центральный процессор - главный чип компьютера, выполняющий все вычисления и операции.", category: "hardware" },
+            { word: "CSS", translation: "Таблицы стилей", meaning: "Язык описания внешнего вида веб-страниц (цвета, шрифты, расположение элементов).", category: "programming" },
+            { word: "Cybersecurity", translation: "Кибербезопасность", meaning: "Практика защиты компьютеров, сетей и данных от цифровых атак и несанкционированного доступа.", category: "security" },
+            { word: "Data", translation: "Данные", meaning: "Информация в цифровой форме, которая может быть обработана компьютером.", category: "general" },
+            { word: "Database", translation: "База данных", meaning: "Организованная коллекция структурированной информации, хранящейся в электронном виде.", category: "programming" },
+            { word: "Debug", translation: "Отладка", meaning: "Процесс поиска, анализа и исправления ошибок в программном коде.", category: "programming" },
+            { word: "Deploy", translation: "Развертывание", meaning: "Процесс выпуска приложения или сайта на сервер для использования пользователями.", category: "programming" },
+            { word: "DNS", translation: "Система доменных имен", meaning: "Система, которая преобразует имена доменов (например, google.com) в IP-адреса.", category: "network" },
+            { word: "Docker", translation: "Докер", meaning: "Платформа для разработки, доставки и запуска приложений в изолированных контейнерах.", category: "programming" },
+            { word: "Domain", translation: "Домен", meaning: "Уникальное имя сайта в интернете (например, example.com).", category: "network" },
+            { word: "Download", translation: "Скачивание", meaning: "Процесс передачи данных с удаленного сервера на локальное устройство.", category: "general" },
+            { word: "Encryption", translation: "Шифрование", meaning: "Процесс преобразования информации в код для предотвращения несанкционированного доступа.", category: "security" },
+            { word: "Error", translation: "Ошибка", meaning: "Сообщение о проблеме в программе или системе, требующее внимания.", category: "programming" },
+            { word: "Ethernet", translation: "Этернет", meaning: "Технология проводного подключения к локальной сети через кабель.", category: "network" },
+            { word: "Extension", translation: "Расширение", meaning: "Дополнительный модуль для браузера или программы, добавляющий новые функции.", category: "general" },
+            { word: "File", translation: "Файл", meaning: "Единица хранения информации на компьютере (документ, изображение, программа).", category: "general" },
+            { word: "Firewall", translation: "Брандмауэр", meaning: "Система безопасности, контролирующая входящий и исходящий сетевой трафик.", category: "security" },
+            { word: "Folder", translation: "Папка", meaning: "Контейнер для организации и хранения файлов на компьютере.", category: "general" },
+            { word: "Framework", translation: "Фреймворк", meaning: "Готовая структура для разработки приложений, ускоряющая процесс создания кода.", category: "programming" },
+            { word: "Frontend", translation: "Клиентская часть", meaning: "Часть приложения, с которой взаимодействует пользователь (интерфейс, дизайн).", category: "programming" },
+            { word: "FTP", translation: "Протокол передачи файлов", meaning: "Стандартный сетевой протокол для передачи файлов между клиентом и сервером.", category: "network" },
+            { word: "Function", translation: "Функция", meaning: "Блок кода, выполняющий определенную задачу и который можно вызывать многократно.", category: "programming" },
+            { word: "Gateway", translation: "Шлюз", meaning: "Устройство или программа, соединяющая разные сети с различными протоколами.", category: "network" },
+            { word: "Git", translation: "Гит", meaning: "Система контроля версий для отслеживания изменений в исходном коде.", category: "programming" },
+            { word: "Gigabyte (GB)", translation: "Гигабайт", meaning: "Единица измерения объема информации, равная 1024 мегабайтам.", category: "hardware" },
+            { word: "GPU", translation: "Видеокарта", meaning: "Графический процессор, специализированный чип для обработки графики и вычислений.", category: "hardware" },
+            { word: "GUI", translation: "Графический интерфейс", meaning: "Интерфейс, использующий визуальные элементы (окна, кнопки, иконки) для взаимодействия.", category: "general" },
+            { word: "Hacker", translation: "Хакер", meaning: "Человек, который исследует компьютерные системы и сети, иногда для взлома.", category: "security" },
+            { word: "Hardware", translation: "Аппаратное обеспечение", meaning: "Физические компоненты компьютера (монитор, клавиатура, процессор, память).", category: "hardware" },
+            { word: "Hash", translation: "Хеш", meaning: "Функция, преобразующая данные в строку фиксированной длины для проверки целостности.", category: "security" },
+            { word: "Hosting", translation: "Хостинг", meaning: "Услуга предоставления места на сервере для размещения сайтов и приложений.", category: "network" },
+            { word: "HTML", translation: "Язык разметки", meaning: "Стандартный язык для создания структуры веб-страниц.", category: "programming" },
+            { word: "HTTP", translation: "Протокол передачи", meaning: "Протокол для передачи данных в интернете между браузером и сервером.", category: "network" },
+            { word: "HTTPS", translation: "Защищенный протокол", meaning: "Безопасная версия HTTP с шифрованием данных через SSL/TLS.", category: "security" },
+            { word: "Icon", translation: "Иконка", meaning: "Небольшое графическое изображение, представляющее программу, файл или функцию.", category: "general" },
+            { word: "IDE", translation: "Среда разработки", meaning: "Программа для написания кода с редактором, отладчиком и другими инструментами.", category: "programming" },
+            { word: "Input", translation: "Ввод", meaning: "Данные или команды, вводимые в компьютер (клавиатура, мышь, микрофон).", category: "hardware" },
+            { word: "Interface", translation: "Интерфейс", meaning: "Способ взаимодействия пользователя с компьютером или между программами.", category: "general" },
+            { word: "Internet", translation: "Интернет", meaning: "Глобальная сеть, соединяющая миллионы компьютеров по всему миру.", category: "network" },
+            { word: "IP", translation: "Ай-пи адрес", meaning: "Уникальный числовой идентификатор устройства в сети.", category: "network" },
+            { word: "Java", translation: "Джава", meaning: "Популярный язык программирования, используемый для создания приложений и веб-сайтов.", category: "programming" },
+            { word: "JavaScript", translation: "Джаваскрипт", meaning: "Язык программирования для создания интерактивных веб-страниц.", category: "programming" },
+            { word: "JSON", translation: "Формат данных", meaning: "Текстовый формат обмена данными, основанный на JavaScript.", category: "programming" },
+            { word: "Kernel", translation: "Ядро", meaning: "Основная часть операционной системы, управляющая ресурсами компьютера.", category: "hardware" },
+            { word: "Keyboard", translation: "Клавиатура", meaning: "Устройство ввода для ввода текста и команд в компьютер.", category: "hardware" },
+            { word: "Key", translation: "Ключ", meaning: "Секретная информация для шифрования, аутентификации или активации ПО.", category: "security" },
+            { word: "LAN", translation: "Локальная сеть", meaning: "Компьютерная сеть, охватывающая небольшую территорию (дом, офис).", category: "network" },
+            { word: "Library", translation: "Библиотека", meaning: "Набор готового кода, который можно использовать в своих программах.", category: "programming" },
+            { word: "Link", translation: "Ссылка", meaning: "Элемент веб-страницы, при клике на который происходит переход на другой ресурс.", category: "general" },
+            { word: "Linux", translation: "Линукс", meaning: "Семейство операционных систем с открытым исходным кодом на основе ядра Linux.", category: "hardware" },
+            { word: "Loop", translation: "Цикл", meaning: "Конструкция в программировании для многократного выполнения блока кода.", category: "programming" },
+            { word: "Macro", translation: "Макрос", meaning: "Последовательность команд, автоматизирующая повторяющиеся задачи.", category: "programming" },
+            { word: "Malware", translation: "Вредоносное ПО", meaning: "Любое программное обеспечение, созданное для нанесения вреда компьютеру.", category: "security" },
+            { word: "Memory", translation: "Память", meaning: "Устройство для хранения данных (оперативная или постоянная).", category: "hardware" },
+            { word: "Monitor", translation: "Монитор", meaning: "Устройство вывода для отображения визуальной информации.", category: "hardware" },
+            { word: "Motherboard", translation: "Материнская плата", meaning: "Основная плата компьютера, соединяющая все компоненты.", category: "hardware" },
+            { word: "Mouse", translation: "Мышь", meaning: "Устройство ввода для управления курсором на экране.", category: "hardware" },
+            { word: "Namespace", translation: "Пространство имен", meaning: "Механизм организации кода для предотвращения конфликтов имен.", category: "programming" },
+            { word: "Network", translation: "Сеть", meaning: "Группа компьютеров, соединенных вместе для обмена данными.", category: "network" },
+            { word: "Node", translation: "Узел", meaning: "Точка соединения в сети или элемент структуры данных.", category: "network" },
+            { word: "NULL", translation: "Пустое значение", meaning: "Специальное значение, обозначающее отсутствие данных или неопределенность.", category: "programming" },
+            { word: "Object", translation: "Объект", meaning: "Экземпляр класса в объектно-ориентированном программировании.", category: "programming" },
+            { word: "Open Source", translation: "Открытый исходный код", meaning: "ПО, исходный код которого доступен для изучения и изменения всем.", category: "programming" },
+            { word: "OS", translation: "Операционная система", meaning: "Основное ПО, управляющее компьютером (Windows, macOS, Linux).", category: "hardware" },
+            { word: "Output", translation: "Вывод", meaning: "Данные, полученные в результате работы программы или устройства.", category: "hardware" },
+            { word: "Password", translation: "Пароль", meaning: "Секретная строка символов для аутентификации пользователя.", category: "security" },
+            { word: "Phishing", translation: "Фишинг", meaning: "Мошеннический метод получения конфиденциальных данных через поддельные сайты.", category: "security" },
+            { word: "PHP", translation: "Пи-эйч-пи", meaning: "Язык программирования для создания динамических веб-сайтов.", category: "programming" },
+            { word: "Pixel", translation: "Пиксель", meaning: "Минимальный элемент изображения на экране.", category: "hardware" },
+            { word: "Port", translation: "Порт", meaning: "Логический номер для идентификации сетевых соединений.", category: "network" },
+            { word: "Protocol", translation: "Протокол", meaning: "Набор правил для обмена данными между устройствами.", category: "network" },
+            { word: "Python", translation: "Питон", meaning: "Популярный язык программирования общего назначения.", category: "programming" },
+            { word: "Query", translation: "Запрос", meaning: "Команда для получения или изменения данных в базе данных.", category: "programming" },
+            { word: "Queue", translation: "Очередь", meaning: "Структура данных, где элементы обрабатываются в порядке поступления.", category: "programming" },
+            { word: "Quantum", translation: "Квантовый", meaning: "Относящийся к квантовым вычислениям - новой парадигме обработки информации.", category: "hardware" },
+            { word: "RAM", translation: "Оперативная память", meaning: "Память для временного хранения данных запущенных программ.", category: "hardware" },
+            { word: "React", translation: "Реакт", meaning: "JavaScript-библиотека для создания пользовательских интерфейсов.", category: "programming" },
+            { word: "Repository", translation: "Репозиторий", meaning: "Хранилище кода проекта, обычно в системе контроля версий.", category: "programming" },
+            { word: "Router", translation: "Роутер", meaning: "Устройство для маршрутизации данных между сетями.", category: "network" },
+            { word: "Ruby", translation: "Руби", meaning: "Язык программирования, известный своей простотой и продуктивностью.", category: "programming" },
+            { word: "Runtime", translation: "Время выполнения", meaning: "Период, когда программа выполняется, или среда для запуска кода.", category: "programming" },
+            { word: "Script", translation: "Скрипт", meaning: "Небольшая программа или набор инструкций для автоматизации задач.", category: "programming" },
+            { word: "Server", translation: "Сервер", meaning: "Мощный компьютер, предоставляющий данные или услуги другим компьютерам.", category: "network" },
+            { word: "Software", translation: "Программное обеспечение", meaning: "Набор программ и инструкций для работы компьютера.", category: "general" },
+            { word: "Spam", translation: "Спам", meaning: "Нежелательные массовые рассылки, обычно рекламного характера.", category: "security" },
+            { word: "SQL", translation: "Язык запросов", meaning: "Язык для управления и работы с реляционными базами данных.", category: "programming" },
+            { word: "SSL", translation: "Защищенный слой", meaning: "Протокол безопасности для шифрования соединения между браузером и сервером.", category: "security" },
+            { word: "Stack", translation: "Стек", meaning: "Структура данных или набор технологий для разработки.", category: "programming" },
+            { word: "TCP", translation: "Протокол управления", meaning: "Основной протокол интернета для надежной передачи данных.", category: "network" },
+            { word: "Template", translation: "Шаблон", meaning: "Готовая структура документа или кода для повторного использования.", category: "programming" },
+            { word: "Terminal", translation: "Терминал", meaning: "Интерфейс командной строки для ввода текстовых команд.", category: "general" },
+            { word: "Thread", translation: "Поток", meaning: "Минимальная единица выполнения в программе.", category: "programming" },
+            { word: "Token", translation: "Токен", meaning: "Цифровой ключ для аутентификации или криптовалютная единица.", category: "security" },
+            { word: "UI", translation: "Пользовательский интерфейс", meaning: "Все элементы, с которыми пользователь взаимодействует в программе.", category: "general" },
+            { word: "Update", translation: "Обновление", meaning: "Новая версия программы с исправлениями или новыми функциями.", category: "general" },
+            { word: "Upload", translation: "Загрузка", meaning: "Процесс передачи данных с локального устройства на сервер.", category: "general" },
+            { word: "URL", translation: "Веб-адрес", meaning: "Уникальный адрес ресурса в интернете.", category: "network" },
+            { word: "USB", translation: "Ю-эс-би", meaning: "Стандарт подключения периферийных устройств к компьютеру.", category: "hardware" },
+            { word: "UX", translation: "Пользовательский опыт", meaning: "Общее впечатление пользователя от взаимодействия с продуктом.", category: "general" },
+            { word: "Variable", translation: "Переменная", meaning: "Именованная область памяти для хранения данных в программе.", category: "programming" },
+            { word: "Version", translation: "Версия", meaning: "Номер выпуска программы, указывающий на изменения.", category: "general" },
+            { word: "Virtual", translation: "Виртуальный", meaning: "Созданный программно, не имеющий физической формы (ВМ, VR).", category: "hardware" },
+            { word: "Virus", translation: "Вирус", meaning: "Вредоносная программа, копирующая себя и заражающая файлы.", category: "security" },
+            { word: "VPN", translation: "Виртуальная сеть", meaning: "Технология создания защищенного соединения через интернет.", category: "security" },
+            { word: "Web", translation: "Веб", meaning: "Всемирная паутина - система связанных документов в интернете.", category: "network" },
+            { word: "Widget", translation: "Виджет", meaning: "Небольшое приложение или элемент интерфейса с конкретной функцией.", category: "general" },
+            { word: "Wi-Fi", translation: "Вай-фай", meaning: "Технология беспроводной локальной сети.", category: "network" },
+            { word: "Windows", translation: "Виндовс", meaning: "Семейство операционных систем от Microsoft.", category: "hardware" },
+            { word: "Worm", translation: "Червь", meaning: "Вредоносная программа, распространяющаяся по сети самостоятельно.", category: "security" },
+            { word: "XML", translation: "Язык разметки", meaning: "Язык для хранения и передачи структурированных данных.", category: "programming" },
+            { word: "XSS", translation: "Межсайтовый скриптинг", meaning: "Уязвимость, позволяющая внедрять вредоносный код на веб-страницы.", category: "security" },
+            { word: "Yield", translation: "Возврат", meaning: "Ключевое слово для возврата значения из генератора в программировании.", category: "programming" },
+            { word: "Zip", translation: "Архив", meaning: "Формат сжатия файлов для уменьшения размера.", category: "general" },
+            { word: "Zero", translation: "Ноль", meaning: "Базовое значение в программировании, часто означает отсутствие или начало.", category: "programming" }
+        ];
+
+        dictionaryData.sort((a, b) => a.word.localeCompare(b.word));
+
+        function renderList(data) {
+            const listContainer = document.getElementById('dictionaryList');
+            const noResults = document.getElementById('noResults');
+            const resultsCount = document.getElementById('resultsCount');
+            const countNumber = document.getElementById('countNumber');
+            
+            listContainer.innerHTML = '';
+
+            if (data.length === 0) {
+                noResults.style.display = 'block';
+                resultsCount.classList.remove('visible');
+                listContainer.classList.remove('visible');
+                return;
+            }
+
+            noResults.style.display = 'none';
+            resultsCount.classList.add('visible');
+            listContainer.classList.add('visible');
+            countNumber.textContent = data.length;
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                card.innerHTML = `
+                    <div class="word-header">
+                        <span class="english-word">${item.word}</span>
+                        <span class="russian-translation">${item.translation}</span>
+                    </div>
+                    <div class="word-definition">${item.meaning}</div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function filterWords(query) {
+            const lowerQuery = query.toLowerCase().trim();
+            
+            // Если поиск пустой - скрываем список
+            if (lowerQuery === '') {
+                document.getElementById('dictionaryList').classList.remove('visible');
+                document.getElementById('resultsCount').classList.remove('visible');
+                document.getElementById('noResults').style.display = 'none';
+                return;
+            }
+
+            // ИЗМЕНЕНО: поиск только по term и translation, без meaning
+            const filtered = dictionaryData.filter(item => 
+                item.word.toLowerCase().includes(lowerQuery) || 
+                item.translation.toLowerCase().includes(lowerQuery)
+            );
+
+            renderList(filtered);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => filterWords(e.target.value));
+            
+            // Фокус на поле поиска при загрузке
+            searchInput.focus();
+        });
+    </script>
+</body>
+</html>
